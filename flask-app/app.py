@@ -15,10 +15,12 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# db_connection_str = 'mysql+pymysql://mysql_user:mysql_password@mysql_host/mysql_db'
-# db_connection = create_engine(db_connection_str)
+db_connection_str = 'mysql+pymysql://mysql_user:mysql_password@mysql_host/mysql_db'
+db_connection = create_engine(db_connection_str)
 
-# df = pd.read_sql('SELECT * FROM stocks', con=db_connection)
+df = pd.read_sql('SELECT * FROM stocks', con=db_connection)
+
+df.head(5)
 
 df = pd.read_csv(r'C:\Users\Aidan\Documents\CustomViz\data\titanic.csv')
 df['Title'] = df['Name'].apply(lambda x: x.split(',')[1].strip().split(' ')[0])
