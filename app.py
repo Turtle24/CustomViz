@@ -3,6 +3,7 @@ from flask import Flask, render_template
 from bokeh.embed import components
 from bokeh.plotting import figure, output_file
 from bokeh.layouts import gridplot
+from bokeh.models import Legend, LegendItem
 
 import numpy as np
 import pandas as pd
@@ -20,7 +21,8 @@ myresult = mycursor.fetchall()
 data = pd.DataFrame(myresult)
 data = data.rename(columns={0: 'Date', 1: 'Close', 2: 'Symbol' })
 data['Date'] = pd.to_datetime(data['Date'])
-print(data)
+legend_stocks = data['Symbol'].unique()
+print(legend_stocks)
 app = Flask(__name__)
 
 def datetime(x):
@@ -46,23 +48,24 @@ def home():
     window = np.ones(window_size)/float(window_size)
     stocks_avg = np.convolve(stocks, window, 'same')
 
-    p2 = figure(x_axis_type="datetime", title="AAPL One-Month Average")
+    p2 = figure(x_axis_type="datetime", title="Stocks One-Month Average")
     p2.grid.grid_line_alpha = 0
     p2.xaxis.axis_label = 'Date'
     p2.yaxis.axis_label = 'Price'
     p2.ygrid.band_fill_color = "olive"
     p2.ygrid.band_fill_alpha = 0.1
-    p2
+    legend = Legend(items=[LegendItem(label=list(legend_stocks))])
     p2.circle(stocks_dates, stocks, size=4, legend_label='close',
             color='darkgrey', alpha=0.2)
 
-    p2.line(stocks_dates, stocks_avg, legend_label='avg', color='navy')
+    p2.line(stocks_dates, stocks_avg, legend_field='legend', color='navy')
     p2.legend.location = "top_left"
+    p2.add_layout(legend)
     #### get components ####
     script1, div1 = components(p1)
     script2, div2 = components(p2)
 
-    page = render_template('home.html', div1=div1, script1=script1)
+    page = render_template('home.html', div1=div1, script1=script1, div2=div2, script2=script2)
 
     return page
 

@@ -82,3 +82,20 @@ body {
   .about-heading {
     margin: 0 auto;
   }
+
+  .home-header-main {
+    padding: 10px;
+    text-align: left;
+  }
+
+  .line-chart {
+    background-color:rgba(255, 0, 0, 0.6);
+  }
+
+  .one-month-avg-chart {
+    background-color:rgba(255, 0, 0, 0.6); 
+  }
+
+  .month-avg-chart-header {
+    padding: 20px;
+  }

@@ -1,13 +1,21 @@
 {% extends "layout.html" %}
 {% block content %}
-  </div>
+  <div>
     <head>
-      <h2 style="text-align:center">Bokeh Test</h2>
+      <h2 class="home-header-main">Stocks Charts</h2>
+      <h4>Line Chart of Closing Prices</h4>
       <meta charset="UTF-8">
       <link href="http://cdn.bokeh.org/bokeh/release/bokeh-2.2.3.min.css" rel="stylesheet" type="text/css">
       <script src="http://cdn.bokeh.org/bokeh/release/bokeh-2.2.3.min.js"></script>
     </head>
+  </div>
+    <div class='line-chart'>
         {{ div1|safe }}
         {{ script1|safe }}
+    </div>
+    <h4 class="month-avg-chart-header">Line Chart of One-Month Average</h4>
+    <div class='one-month-avg-chart'>
+      {{ div2|safe }}
+      {{ script2|safe }}
   </div>
 {% endblock content %}
