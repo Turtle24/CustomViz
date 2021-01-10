@@ -66,10 +66,10 @@ def home():
 
     return page
 
-@app.route('/about', methods=['GET', 'POST'])
+@app.route('/regression', methods=['GET', 'POST'])
 def about():
     
-    return render_template('about.html', title='About')
+    return render_template('regression.html', title='Linear Regression')
 
 if __name__ == "__main__":
     app.run(debug=True,
