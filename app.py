@@ -16,13 +16,11 @@ mydb = mysql.connector.connect(
   database="stocks"
 )
 mycursor = mydb.cursor()
-mycursor.execute("SELECT Date, Close, Symbol FROM stocks LIMIT 100")
+mycursor.execute("SELECT Date, Close, Symbol FROM stocks WHERE Date >= '2018-01-01' and Symbol = 'AA'")
 myresult = mycursor.fetchall()
 data = pd.DataFrame(myresult)
 data = data.rename(columns={0: 'Date', 1: 'Close', 2: 'Symbol' })
 data['Date'] = pd.to_datetime(data['Date'])
-legend_stocks = data['Symbol'].unique()
-print(legend_stocks)
 app = Flask(__name__)
 
 def datetime(x):
@@ -35,8 +33,8 @@ def home():
     p1.xaxis.axis_label = 'Date'
     p1.yaxis.axis_label = 'Price'
 
-    p1.line(data['Date'], data['Close'], color='#A6CEE3')
-    # p1.line(datetime(GOOG['date']), GOOG['adj_close'], color='#B2DF8A', legend_label='GOOG')
+    p1.line(data['Date'], data['Close'], color='#A6CEE3', legend_label='AA')
+    # p1.line(data['Date'], data['Close'], color='#B2DF8A', legend_label='ABB')
     # p1.line(datetime(IBM['date']), IBM['adj_close'], color='#33A02C', legend_label='IBM')
     # p1.line(datetime(MSFT['date']), MSFT['adj_close'], color='#FB9A99', legend_label='MSFT')
     p1.legend.location = "top_left"
@@ -54,13 +52,12 @@ def home():
     p2.yaxis.axis_label = 'Price'
     p2.ygrid.band_fill_color = "olive"
     p2.ygrid.band_fill_alpha = 0.1
-    legend = Legend(items=[LegendItem(label=list(legend_stocks))])
     p2.circle(stocks_dates, stocks, size=4, legend_label='close',
             color='darkgrey', alpha=0.2)
 
-    p2.line(stocks_dates, stocks_avg, legend_field='legend', color='navy')
+    p2.line(stocks_dates, stocks_avg, legend_label='AA', color='navy')
     p2.legend.location = "top_left"
-    p2.add_layout(legend)
+  
     #### get components ####
     script1, div1 = components(p1)
     script2, div2 = components(p2)
