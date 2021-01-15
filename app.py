@@ -34,9 +34,6 @@ def home():
     p1.yaxis.axis_label = 'Price'
 
     p1.line(data['Date'], data['Close'], color='#A6CEE3', legend_label='AA')
-    # p1.line(data['Date'], data['Close'], color='#B2DF8A', legend_label='ABB')
-    # p1.line(datetime(IBM['date']), IBM['adj_close'], color='#33A02C', legend_label='IBM')
-    # p1.line(datetime(MSFT['date']), MSFT['adj_close'], color='#FB9A99', legend_label='MSFT')
     p1.legend.location = "top_left"
 
     stocks = np.array(data['Close'])
