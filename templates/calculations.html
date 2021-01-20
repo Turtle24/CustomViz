@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+    <body>
+        <h3>{{ title }}</h3>
+    </body>
+    <div>
+        <head>
+          <h2 class="home-header-main">Scatter Plot</h2>
+          <h4>Scatter Plot Test</h4>
+          <meta charset="UTF-8">
+          <link href="http://cdn.bokeh.org/bokeh/release/bokeh-2.2.3.min.css" rel="stylesheet" type="text/css">
+          <script src="http://cdn.bokeh.org/bokeh/release/bokeh-2.2.3.min.js"></script>
+        </head>
+      </div>
+        <div class='line-chart'>
+            {{ div3|safe }}
+            {{ script3|safe }}
+        </div>
+{% endblock content %}

@@ -28,6 +28,7 @@ def datetime(x):
 
 @app.route('/')
 def home():
+    # Chart 1
     p1 = figure(x_axis_type="datetime", title="Stock Closing Prices")
     p1.grid.grid_line_alpha=0.3
     p1.xaxis.axis_label = 'Date'
@@ -43,6 +44,7 @@ def home():
     window = np.ones(window_size)/float(window_size)
     stocks_avg = np.convolve(stocks, window, 'same')
 
+    # Chart 2
     p2 = figure(x_axis_type="datetime", title="Stocks One-Month Average")
     p2.grid.grid_line_alpha = 0
     p2.xaxis.axis_label = 'Date'
@@ -64,9 +66,24 @@ def home():
     return page
 
 @app.route('/regression', methods=['GET', 'POST'])
-def about():
+def regression():
     
     return render_template('regression.html', title='Linear Regression')
+
+@app.route('/calculations', methods=['GET', 'POST'])
+def calculations():
+    stocks = np.array(data['Close'])
+    stocks_dates = np.array(data['Date'], dtype=np.datetime64)
+    p3 = figure(title="Stocks: Scatter Plot Test")
+    p3.circle(stocks, stocks_dates)
+
+    window_size = 30
+    window = np.ones(window_size)/float(window_size)
+    #### get components ####
+    script3, div3 = components(p3)
+
+    page = render_template('calculations.html', div3=div3, script3=script3)
+    return page
 
 if __name__ == "__main__":
     app.run(debug=True,
