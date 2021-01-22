@@ -4,4 +4,17 @@
         <h3>{{ title }}</h3>
         <h2>Oh Boy, Oh Boy Sciences!</h2>
     </body>
+    <div>
+        <head>
+          <h2 class="home-header-main">Stocks Charts</h2>
+          <h4>Line Chart of Closing Prices</h4>
+          <meta charset="UTF-8">
+          <link href="http://cdn.bokeh.org/bokeh/release/bokeh-2.2.3.min.css" rel="stylesheet" type="text/css">
+          <script src="http://cdn.bokeh.org/bokeh/release/bokeh-2.2.3.min.js"></script>
+        </head>
+      </div>
+        <div class='line-chart'>
+            {{ div1|safe }}
+            {{ script1|safe }}
+        </div>
 {% endblock content %}

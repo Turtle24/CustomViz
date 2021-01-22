@@ -5,6 +5,7 @@ from bokeh.plotting import figure, output_file
 from bokeh.layouts import gridplot
 from bokeh.models import Legend, LegendItem
 
+from sklearn.linear_model import LinearRegression
 import numpy as np
 import pandas as pd
 import mysql.connector
@@ -16,10 +17,10 @@ mydb = mysql.connector.connect(
   database="stocks"
 )
 mycursor = mydb.cursor()
-mycursor.execute("SELECT Date, Close, Symbol FROM stocks WHERE Date >= '2018-01-01' and Symbol = 'AA'")
+mycursor.execute("SELECT Date, Open, Close, Symbol FROM stocks WHERE Date >= '2018-01-01' and Symbol = 'AA'")
 myresult = mycursor.fetchall()
 data = pd.DataFrame(myresult)
-data = data.rename(columns={0: 'Date', 1: 'Close', 2: 'Symbol' })
+data = data.rename(columns={0: 'Date', 1: 'Open', 2: 'Close', 3: 'Symbol' })
 data['Date'] = pd.to_datetime(data['Date'])
 app = Flask(__name__)
 
@@ -67,15 +68,37 @@ def home():
 
 @app.route('/regression', methods=['GET', 'POST'])
 def regression():
-    
-    return render_template('regression.html', title='Linear Regression')
+    # Regression Test
+    reg = LinearRegression()
+    stocks_close = np.array(data['Close'])
+    stocks_open = np.array(data['Open'])
+    stocks_close = stocks_close.reshape(1, -1)
+    stocks_open = stocks_open.reshape(1, -1)
+    test_x = stocks_open.reshape(-1, 1)
+    test_x = test_x[0:2]
+    print(test_x)
+    model = reg.fit(stocks_open, stocks_close)
+    r_sq = model.score(stocks_open, stocks_close)
+    co_ef = reg.coef_
+    pR = figure(title=f"Stock Name - {data['Symbol'][0]}")
+    pR.circle(model.predict(test_x))
+
+    window_size = 30
+    window = np.ones(window_size)/float(window_size)
+    #### get components ####
+    scriptR, divR = components(pR)
+
+    page = render_template('regression.html', divR=divR, script3=scriptR)
+
+
+    return page
 
 @app.route('/calculations', methods=['GET', 'POST'])
 def calculations():
-    stocks = np.array(data['Close'])
-    stocks_dates = np.array(data['Date'], dtype=np.datetime64)
-    p3 = figure(title="Stocks: Scatter Plot Test")
-    p3.circle(stocks, stocks_dates)
+    stocks_close = np.array(data['Close'])
+    stocks_open = np.array(data['Open'])  #np.array(data['Date'], dtype=np.datetime64)
+    p3 = figure(title=f"Stock Name - {data['Symbol'][0]}")
+    p3.circle(stocks_close, stocks_open)
 
     window_size = 30
     window = np.ones(window_size)/float(window_size)
