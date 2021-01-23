@@ -72,7 +72,7 @@ def home():
 @app.route('/regression', methods=['GET', 'POST'])
 def regression():
 
-    pR = figure(title="Stocks One-Month Average")
+    pR = figure(title="Regression Test")
     house = load_boston()
 
     train_x, test_x, train_y, test_y = train_test_split(house.data,
