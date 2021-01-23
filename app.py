@@ -5,7 +5,10 @@ from bokeh.plotting import figure, output_file
 from bokeh.layouts import gridplot
 from bokeh.models import Legend, LegendItem
 
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.datasets import load_boston
+import sklearn.metrics as metrics
 import numpy as np
 import pandas as pd
 import mysql.connector
@@ -68,27 +71,31 @@ def home():
 
 @app.route('/regression', methods=['GET', 'POST'])
 def regression():
-    # Regression Test
-    reg = LinearRegression()
-    stocks_close = np.array(data['Close'])
-    stocks_open = np.array(data['Open'])
-    stocks_close = stocks_close.reshape(1, -1)
-    stocks_open = stocks_open.reshape(1, -1)
-    test_x = stocks_open.reshape(-1, 1)
-    test_x = test_x[0:2]
-    print(test_x)
-    model = reg.fit(stocks_open, stocks_close)
-    r_sq = model.score(stocks_open, stocks_close)
-    co_ef = reg.coef_
-    pR = figure(title=f"Stock Name - {data['Symbol'][0]}")
-    pR.circle(model.predict(test_x))
+
+    pR = figure(title="Stocks One-Month Average")
+    house = load_boston()
+
+    train_x, test_x, train_y, test_y = train_test_split(house.data,
+                                                        house.target,
+                                                        test_size=0.2,
+                                                        random_state=42)
+
+    lr = LinearRegression()
+    lr.fit(train_x, train_y)
+
+    pred_y = lr.predict(test_x)
+    mse = metrics.mean_squared_error(test_y, pred_y)
 
     window_size = 30
     window = np.ones(window_size)/float(window_size)
+
+    points_x = test_x.flatten()
+
+    pR.circle(points_x[0:102], pred_y)
     #### get components ####
     scriptR, divR = components(pR)
 
-    page = render_template('regression.html', divR=divR, script3=scriptR)
+    page = render_template('regression.html', divR=divR, scriptR=scriptR)
 
 
     return page
