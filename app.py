@@ -88,10 +88,13 @@ def regression():
 
     window_size = 30
     window = np.ones(window_size)/float(window_size)
-
-    points_x = test_x.flatten()
-
-    pR.circle(points_x[0:102], pred_y)
+    
+    test_x = pd.DataFrame(test_x)
+    train_x = pd.DataFrame(train_x)
+    print(test_x.head())
+    pR.line(train_x, train_y, legend_label='Actuals', color='red')
+    pR.line(test_x, pred_y, legend_label='Predict', color='black')
+    # pR.circle(test_x, pred_y)
     #### get components ####
     scriptR, divR = components(pR)
 
