@@ -3,12 +3,15 @@ from flask import Flask, render_template
 from bokeh.embed import components
 from bokeh.plotting import figure, output_file
 from bokeh.layouts import gridplot
-from bokeh.models import Legend, LegendItem
+from bokeh.palettes import Spectral6
+from bokeh.models import Legend, LegendItem, ColorBar
+from bokeh.transform import linear_cmap
 
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.datasets import load_boston
 import sklearn.metrics as metrics
+
 import numpy as np
 import pandas as pd
 import mysql.connector
@@ -91,7 +94,7 @@ def regression():
     
     test_x = pd.DataFrame(test_x)
     train_x = pd.DataFrame(train_x)
-    print(test_x.head())
+
     pR.line(train_x, train_y, legend_label='Actuals', color='red')
     pR.line(test_x, pred_y, legend_label='Predict', color='black')
     # pR.circle(test_x, pred_y)
@@ -105,15 +108,30 @@ def regression():
 
 @app.route('/calculations', methods=['GET', 'POST'])
 def calculations():
+    #Tool tips
+    TOOLTIPS = [
+    ("index", "$index"),
+    ("Close", "@Close"),
+    ("Open", "@Open"),
+    ("name", "@Symbol"),
+    ]
     stocks_close = np.array(data['Close'])
     stocks_open = np.array(data['Open'])  #np.array(data['Date'], dtype=np.datetime64)
-    p3 = figure(title=f"Stock Name - {data['Symbol'][0]}")
-    p3.circle(stocks_close, stocks_open)
+    mapper = linear_cmap(field_name='y', palette=Spectral6 ,low=min(stocks_close) ,high=max(stocks_open))
 
+    p3 = figure(title=f"Stock Name - {data['Symbol'][0]}", tooltips=TOOLTIPS)
+    p3.circle(stocks_close, stocks_open,line_color=mapper,color=mapper, fill_alpha=1, size=12)
+
+    color_bar = ColorBar(color_mapper=mapper['transform'], width=8,  location=(0,0))
+    p3.add_layout(color_bar, 'right')
+    # Visual size
     window_size = 30
     window = np.ones(window_size)/float(window_size)
+
     #### get components ####
     script3, div3 = components(p3)
+
+    # Visual 2
 
     page = render_template('calculations.html', div3=div3, script3=script3)
     return page
