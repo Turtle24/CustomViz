@@ -35,6 +35,7 @@ def datetime(x):
 
 @app.route('/')
 def home():
+    
     # Chart 1
     p1 = figure(x_axis_type="datetime", title="Stock Closing Prices")
     p1.grid.grid_line_alpha=0.3
