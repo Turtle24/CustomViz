@@ -2,9 +2,9 @@ from flask import Flask, render_template
 
 from bokeh.embed import components
 from bokeh.plotting import figure, output_file
-from bokeh.layouts import gridplot
+from bokeh.layouts import gridplot, column ,row
 from bokeh.palettes import Spectral6
-from bokeh.models import Legend, LegendItem, ColorBar
+from bokeh.models import Legend, LegendItem, ColorBar, DateSlider, CustomJS
 from bokeh.transform import linear_cmap
 
 from sklearn.model_selection import train_test_split
@@ -52,6 +52,20 @@ def home():
     window = np.ones(window_size)/float(window_size)
     stocks_avg = np.convolve(stocks, window, 'same')
 
+    date_slider = DateSlider(start=stocks_dates[0], end=stocks_dates[-1], title="Date")
+
+    callback = CustomJS(args=dict(source=data, date=date_slider),
+                    code="""
+    const data = source.data;
+    const D = date.value;
+    }
+    source.change.emit();
+    """)
+    date_slider.js_on_change('value', callback)
+    layout = row(
+    p1,
+    column(date_slider),
+    )
     # Chart 2
     p2 = figure(x_axis_type="datetime", title="Stocks One-Month Average")
     p2.grid.grid_line_alpha = 0
@@ -66,7 +80,7 @@ def home():
     p2.legend.location = "top_left"
   
     #### get components ####
-    script1, div1 = components(p1)
+    script1, div1 = components(layout)  # DateSlider NB
     script2, div2 = components(p2)
 
     page = render_template('home.html', div1=div1, script1=script1, div2=div2, script2=script2)
