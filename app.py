@@ -23,7 +23,7 @@ mydb = mysql.connector.connect(
   database="stocks"
 )
 mycursor = mydb.cursor()
-mycursor.execute("SELECT Date, Open, Close, Symbol FROM stocks WHERE Date >= '2018-01-01' and Symbol = 'AA'")
+mycursor.execute("SELECT Date, Open, Close, Symbol FROM stocks.stocks_table WHERE Date >= '2018-01-01' and Symbol = 'AA'")
 myresult = mycursor.fetchall()
 data = pd.DataFrame(myresult)
 data = data.rename(columns={0: 'Date', 1: 'Open', 2: 'Close', 3: 'Symbol' })
