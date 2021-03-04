@@ -1,5 +1,4 @@
 from flask import Flask, render_template
-
 from bokeh.embed import components
 from bokeh.plotting import figure, output_file
 from bokeh.layouts import gridplot, column ,row
@@ -47,25 +46,10 @@ def home():
 
     stocks = np.array(data['Close'])
     stocks_dates = np.array(data['Date'], dtype=np.datetime64)
-
+    
     window_size = 30
     window = np.ones(window_size)/float(window_size)
     stocks_avg = np.convolve(stocks, window, 'same')
-
-    date_slider = DateSlider(start=stocks_dates[0], end=stocks_dates[-1], title="Date")
-
-    callback = CustomJS(args=dict(source=data, date=date_slider),
-                    code="""
-    const data = source.data;
-    const D = date.value;
-    }
-    source.change.emit();
-    """)
-    date_slider.js_on_change('value', callback)
-    layout = row(
-    p1,
-    column(date_slider),
-    )
     # Chart 2
     p2 = figure(x_axis_type="datetime", title="Stocks One-Month Average")
     p2.grid.grid_line_alpha = 0
@@ -80,7 +64,7 @@ def home():
     p2.legend.location = "top_left"
   
     #### get components ####
-    script1, div1 = components(layout)  # DateSlider NB
+    script1, div1 = components(p1)  # DateSlider NB
     script2, div2 = components(p2)
 
     page = render_template('home.html', div1=div1, script1=script1, div2=div2, script2=script2)
@@ -121,17 +105,17 @@ def regression():
 
     return page
 
-@app.route('/calculations', methods=['GET', 'POST'])
-def calculations():
+@app.route('/analysis', methods=['GET', 'POST'])
+def analysis():
     #Tool tips
     TOOLTIPS = [
     ("index", "$index"),
-    ("Close", "@Close"),
-    ("Open", "@Open"),
+    ("Close", "@stocks_close"),
+    ("Open", "@stocks_open"),
     ("name", "@Symbol"),
     ]
-    stocks_close = np.array(data['Close'])
-    stocks_open = np.array(data['Open'])  #np.array(data['Date'], dtype=np.datetime64)
+    stocks_close = np.array(data['Close'][:50])
+    stocks_open = np.array(data['Open'][:50])  #np.array(data['Date'], dtype=np.datetime64)
     mapper = linear_cmap(field_name='y', palette=Spectral6 ,low=min(stocks_close) ,high=max(stocks_open))
 
     p3 = figure(title=f"Stock Name - {data['Symbol'][0]}", tooltips=TOOLTIPS)
@@ -148,7 +132,7 @@ def calculations():
 
     # Visual 2
 
-    page = render_template('calculations.html', div3=div3, script3=script3)
+    page = render_template('analysis.html', div3=div3, script3=script3)
     return page
 
 if __name__ == "__main__":
